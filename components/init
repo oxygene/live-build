@@ -34,11 +34,13 @@ def main():
 		formatter_class = argparse.ArgumentDefaultsHelpFormatter
 	)
 
-	arguments.add_argument('--version',      help='show program\'s version number and exit', action='version', version='live-build 4')
-	arguments.add_argument('--verbose',      help='set verbose option',                      action='store_true')
+	arguments.add_argument('--version',          help='show program\'s version number and exit', action='version', version='live-build 4')
+	arguments.add_argument('--verbose',          help='set verbose option',                      action='store_true')
 
-	arguments.add_argument('--distribution', help='set default distribution')
-	arguments.add_argument('--project',      help='set project defaults')
+	arguments.add_argument('--distribution',     help='set default distribution')
+	arguments.add_argument('--project',          help='set project defaults')
+
+	arguments.add_argument('--mirror-bootstrap', help='set bootstrap mirror')
 
 	args = arguments.parse_args()
 
@@ -50,6 +52,9 @@ def main():
 
 	# --project
 	project = args.project
+
+	# --mirror-bootstrap
+	mirror_bootstrap = args.mirror_bootstrap
 
 	## Setting defaults
 
@@ -64,6 +69,12 @@ def main():
 		}
 
 		distribution = default_distribution[project]
+
+	if not mirror_bootstrap:
+		if (project == 'debian'):
+			mirror_bootstrap = 'http://ftp.debian.org/debian/'
+		elif (project == 'ubuntu'):
+			mirror_bootstrap = 'http://archive.ubuntu.com/ubuntu/'
 
 	## Creating configuration directory
 
@@ -86,6 +97,12 @@ def main():
 	print('and that we are only supporting the newest development version.\n')
 
 	print('Make sure you are using the newest version at all times.')
+
+	# Configuring default mirrors
+	os.makedirs('config/archives', exist_ok=True)
+
+	f = open('config/archives/mirror.list.bootstrap', 'w')
+	f.write('deb ' + mirror_bootstrap + ' ' + distribution + ' main\n')
 
 	# Configuring default archive-keys
 	if (project == 'progress-linux'):
