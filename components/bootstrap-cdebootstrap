@@ -54,10 +54,16 @@ def main():
 	try:
 		architecture     = config.get('Image', 'Architecture')
 		distribution     = config.get('Image', 'Parent-Distribution')
-		mirror_bootstrap = config.get('Image', 'Parent-Mirror-Bootstrap')
 	except:
 		distribution     = config.get('Image', 'Distribution')
-		mirror_bootstrap = config.get('Image', 'Mirror-Bootstrap')
+
+	if not os.path.isfile('config/archives/mirror.list.bootstrap'):
+		print('E: config/archives/mirror.list.bootstrap - no such file', file=sys.stderr)
+
+		if verbose:
+			print('I: use \'lb init\' to initialize configuration directory')
+
+		sys.exit(1)
 
 	# --verbose
 	verbose = args.verbose

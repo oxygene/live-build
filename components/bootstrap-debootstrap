@@ -55,11 +55,26 @@ def main():
 		architecture     = config.get('Image', 'Architecture')
 		archive_areas    = config.get('Image', 'Parent-Archive-Areas')
 		distribution     = config.get('Image', 'Parent-Distribution')
-		mirror_bootstrap = config.get('Image', 'Parent-Mirror-Bootstrap')
 	except:
 		archive_areas    = config.get('Image', 'Archive-Areas')
 		distribution     = config.get('Image', 'Distribution')
-		mirror_bootstrap = config.get('Image', 'Mirror-Bootstrap')
+
+	if not os.path.isfile('config/archives/mirror.list.bootstrap'):
+		print('E: config/archives/mirror.list.bootstrap - no such file', file=sys.stderr)
+
+		if verbose:
+			print('I: use \'lb init\' to initialize configuration directory')
+
+		sys.exit(1)
+
+	for line in open('config/archives/mirror.list.bootstrap'):
+		l = line.strip()
+
+		if not l.startswith("#") and l.startswith("deb "):
+			mirror_bootstrap = line.rstrip()
+			break
+
+	print(mirror_bootstrap)
 
 	# --verbose
 	verbose = args.verbose
